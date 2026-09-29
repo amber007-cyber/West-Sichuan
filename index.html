@@ -33,10 +33,37 @@ h1{margin:0 0 22px;font-size:64px;line-height:1.03;letter-spacing:-.04em;font-we
 <g fill="#243043" stroke="#fff" stroke-width="3"><circle cx="1014" cy="133" r="10"/><circle cx="922" cy="160" r="10"/><circle cx="812" cy="347" r="10"/><circle cx="650" cy="382" r="10"/><circle cx="590" cy="308" r="10"/><circle cx="482" cy="224" r="10"/><circle cx="450" cy="224" r="10"/><circle cx="418" cy="201" r="10"/><circle cx="512" cy="362" r="10"/><circle cx="474" cy="420" r="10"/><circle cx="433" cy="506" r="10"/><circle cx="556" cy="251" r="10"/><circle cx="618" cy="276" r="10"/><circle cx="1058" cy="132" r="10"/></g><g fill="#202938" font-size="16" font-weight="700" style="paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round"><text x="1018" y="116">天府机场</text><text x="932" y="181">双流机场</text><text x="820" y="336">天全服务区</text><text x="660" y="403">康定</text><text x="600" y="298">红海子</text><text x="492" y="214">木雅大寺</text><text x="365" y="220">塔公草原</text><text x="346" y="192">姑弄村</text><text x="520" y="383">新都桥</text><text x="392" y="425">甲根坝</text><text x="443" y="533">冷嘎措</text><text x="567" y="241">格底拉姆</text><text x="628" y="266">折多山</text><text x="1062" y="119">成都</text></g><g font-size="13" fill="#4f5965" style="paint-order:stroke;stroke:#fff;stroke-width:3px"><text x="868" y="113">D1 · 双机场接机 + 进山</text><text x="385" y="166">D2 · 雅拉方向</text><text x="350" y="494">D3 · 贡嘎支线</text><text x="648" y="238">D4 · 边玩边回成都</text></g></svg>
 <div class="day-grid"><div class="day" data-card="d1"><div class="d">D1 · 10/4</div><b>成都 → 康定</b><p>天府、双流两机场接机 → 天全 → 康定。第一天只做一件事：顺利进山。</p></div><div class="day" data-card="d2"><div class="d">D2 · 10/5</div><b>康定 → 新都桥</b><p>红海子、木雅大寺、塔公/姑弄村。天气好，就把傍晚留给雅拉。</p></div><div class="day" data-card="d3"><div class="d">D3 · 10/6</div><b>冷嘎措单独一天</b><p>新都桥 → 甲根坝 → 冷嘎措 → 新都桥。整趟最想赌一次贡嘎日照金山。</p></div><div class="day" data-card="d4"><div class="d">D4 · 10/7</div><b>边玩边回成都</b><p>格底拉姆 → 折多山 → 成都。康定仅作为返程方向参考，不单独安排停留；D5 下午才飞，所以这一天不焦虑几点到。</p></div></div></div></section>
 <section class="section trade"><div><div class="section-no">03 · WHAT WE TRADED</div><h2 class="serif">放弃“更多”，<br>选择“更稳”。</h2></div><div class="trade-grid"><div><h4>第一晚只到康定</h4><p>航班延误、双机场接机、国庆堵车、高反，都不用在 D1 变成压力。</p></div><div><h4>新都桥连住两晚</h4><p>不用天天搬酒店，也能把冷嘎措单独留成一个完整的核心日。</p></div><div><h4>次要景点随时删</h4><p>红海子、姑弄村、格底拉姆都不是 KPI。天气和身体状态优先。</p></div><div><h4>保留两次日落机会</h4><p>D2 雅拉，D3 贡嘎。看到一次就赚到，不为了第二次硬扛。</p></div></div></section>
-<section class="video-section"><div class="section-no">04 · ONE LAST LOOK</div><div class="video-box"><video controls playsinline preload="metadata"><source src="chuanxi_video.mp4" type="video/mp4">你的浏览器暂不支持视频播放。</video></div><div class="video-note">点击播放 · 保留原视频声音</div></section>
+<section class="video-section"><div class="section-no">04 · ONE LAST LOOK</div><div class="video-box"><video id="tripVideo" controls playsinline preload="metadata">你的浏览器暂不支持视频播放。</video></div><div class="video-note" id="videoStatus">视频加载中… · 原声保留</div></section>
 <section class="end"><div class="section-no">THE POINT OF THIS TRIP</div><h3 class="serif">不是第一次去川西就把川西看完，<br>而是第一次去，先把自己最想看的那一面看好。</h3><p>雅拉雪山 · 贡嘎日照金山 · 高原公路 · 草原与村落</p></section>
 </main>
 <script>
+async function loadTripVideo(){
+  const video=document.getElementById('tripVideo');
+  const status=document.getElementById('videoStatus');
+  try{
+    const parts=[];
+    let total=0;
+    for(let i=0;i<17;i++){
+      const name='video_chunks/video_'+String(i).padStart(2,'0')+'.txt';
+      const b64=(await (await fetch(name)).text()).trim();
+      const bin=atob(b64);
+      const bytes=new Uint8Array(bin.length);
+      for(let j=0;j<bin.length;j++) bytes[j]=bin.charCodeAt(j);
+      parts.push(bytes);
+      total+=bytes.length;
+    }
+    const merged=new Uint8Array(total);
+    let offset=0;
+    for(const p of parts){merged.set(p,offset);offset+=p.length;}
+    video.src=URL.createObjectURL(new Blob([merged],{type:'video/mp4'}));
+    status.textContent='点击播放 · 保留原视频声音';
+  }catch(e){
+    status.textContent='视频加载失败，请刷新页面重试';
+    console.error(e);
+  }
+}
+loadTripVideo();
+
 const buttons=[...document.querySelectorAll('.route-tools button')],lines=[...document.querySelectorAll('.route-line')],cards=[...document.querySelectorAll('[data-card]')];
 buttons.forEach(btn=>{btn.addEventListener('click',()=>{const day=btn.dataset.day;buttons.forEach(b=>b.classList.toggle('active',b===btn));lines.forEach(l=>{const on=day==='all'||l.dataset.route===day;l.style.opacity=on?'1':'.12';l.style.strokeWidth=on?'14':'7'});cards.forEach(c=>{const on=day==='all'||c.dataset.card===day;c.style.opacity=on?'1':'.28'})})});
 </script></body></html>
